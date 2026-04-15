@@ -1,11 +1,16 @@
 <template>
   <div class="p-6">
-    <AutoArticle :text="text" />
+    <AutoArticle :text="text" :search="search" />
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import AutoArticle from '../components/Article.vue'
+
+const route = useRoute()
+const search = computed(() => route.query.search || '')
 
 const text = `
  Всемирная ист]ория (конец V – конец XV века) 7 класс
