@@ -27,11 +27,18 @@
 
     <div class="flex items-center gap-3 md:gap-6">
       
-      <div class="hidden md:flex gap-4 lg:gap-6 text-sm font-medium text-gray-700 dark:text-gray-300">
-        <router-link to="/6" class="hover:text-purple-600 transition">6 класс</router-link>
-        <router-link to="/7" class="hover:text-purple-600 transition">7 класс</router-link>
-        <router-link to="/8" class="hover:text-purple-600 transition">8 класс</router-link>
-        <router-link to="/9" class="hover:text-purple-600 transition">9 класс</router-link>
+      <div class="hidden md:flex items-center gap-4 lg:gap-6 text-sm font-medium text-gray-700 dark:text-gray-300">
+        <div class="flex gap-3 border-r border-gray-200 dark:border-gray-700 pr-4">
+          <router-link to="/6" class="hover:text-purple-600 transition">6 класс</router-link>
+          <router-link to="/7" class="hover:text-purple-600 transition">7 класс</router-link>
+          <router-link to="/8" class="hover:text-purple-600 transition">8 класс</router-link>
+          <router-link to="/9" class="hover:text-purple-600 transition">9 класс</router-link>
+        </div>
+        <div class="flex gap-3 italic">
+          <router-link to="/7uz" class="hover:text-blue-500 transition">7-Uz</router-link>
+          <router-link to="/8uz" class="hover:text-blue-500 transition">8-Uz</router-link>
+          <router-link to="/9uz" class="hover:text-blue-500 transition">9-Uz</router-link>
+        </div>
       </div>
 
       <button
@@ -86,10 +93,32 @@
           {{ isDarkMode ? 'Светлая тема' : 'Темная тема' }}
         </button>
 
-        <div class="flex flex-col gap-5">
-          <router-link v-for="i in [6,7,8,9]" :key="i" :to="'/'+i" @click="open = false" class="text-lg font-medium dark:text-gray-200 hover:text-purple-600">
-            {{i}} класс
-          </router-link>
+       <div class="flex flex-col gap-2">
+          <div class="flex flex-col gap-4">
+            <router-link 
+              v-for="i in [6,7,8,9]" 
+              :key="'ru'+i" 
+              :to="'/'+i" 
+              @click="open = false" 
+              class="text-lg font-medium dark:text-gray-200 hover:text-purple-600"
+            >
+              {{i}} класс
+            </router-link>
+          </div>
+
+          <div class="my-4 border-t border-gray-200 dark:border-gray-700"></div>
+
+          <div class="flex flex-col gap-4">
+            <router-link 
+              v-for="i in [7,8,9]" 
+              :key="'uz'+i" 
+              :to="'/'+i+'uz'" 
+              @click="open = false" 
+              class="text-lg font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500"
+            >
+              {{i}} класс (История Уз)
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
