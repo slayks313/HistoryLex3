@@ -4,6 +4,8 @@ import router from './router'
 
 import './style.css'
 
-createApp(App)
-  .use(router) // ВОТ ЭТО ГЛАВНОЕ
+const app = createApp(App)
+
+app
+  .use(router)
   .mount('#app')

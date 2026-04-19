@@ -2,9 +2,9 @@
   <nav class="fixed top-0 left-0 w-full z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex items-center px-4 md:px-6 py-3 md:py-4 gap-2 md:gap-4">
 
     <div class="flex-shrink-0">
-      <div class="text-base md:text-xl font-bold text-slate-900 dark:text-white uppercase tracking-tighter md:tracking-normal">
+      <router-link to="/" class="text-base md:text-xl font-bold text-slate-900 dark:text-white uppercase tracking-tighter md:tracking-normal">
         History
-      </div>
+      </router-link>
     </div>
 
     <div class="flex-1 flex justify-center">
@@ -49,7 +49,51 @@
         <SunIcon v-else class="w-5 h-5" />
       </button>
 
-      <UserIcon class="w-5 h-5 cursor-pointer text-gray-700 dark:text-gray-300" />
+      <!-- Профиль пользователя -->
+      <div class="relative">
+        <button
+          @click="profileMenuOpen = !profileMenuOpen"
+          class="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-full transition"
+        >
+          <UserIcon class="w-5 h-5" />
+        </button>
+
+        <!-- Дропдаун меню -->
+        <Transition name="fade">
+          <div
+            v-if="profileMenuOpen"
+            class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-2 z-50"
+          >
+            <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+              <p class="text-sm text-gray-600 dark:text-gray-400">Залогирован как</p>
+              <p class="font-semibold text-gray-900 dark:text-white truncate">{{ user?.email }}</p>
+            </div>
+
+            <router-link
+              to="/profile"
+              @click="profileMenuOpen = false"
+              class="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+            >
+              Профиль
+            </router-link>
+
+            <button
+              @click="handleLogout"
+              :disabled="loading"
+              class="w-full text-left px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition disabled:opacity-50"
+            >
+              {{ loading ? 'Выход...' : 'Выйти' }}
+            </button>
+          </div>
+        </Transition>
+
+        <!-- Backdrop -->
+        <div
+          v-if="profileMenuOpen"
+          @click="profileMenuOpen = false"
+          class="fixed inset-0 z-40"
+        ></div>
+      </div>
 
       <Bars3Icon
         class="w-6 h-6 cursor-pointer md:hidden text-gray-700 dark:text-gray-300"
@@ -126,19 +170,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuth } from '../composables/useAuth'
 import {
   MagnifyingGlassIcon, UserIcon, Bars3Icon, XMarkIcon, MoonIcon, SunIcon
 } from '@heroicons/vue/24/outline'
 
 const open = ref(false)
+const profileMenuOpen = ref(false)
 const search = ref('')
 const lastSearch = ref('')
 const notFound = ref(false)
 const isDarkMode = ref(false)
 const route = useRoute()
 const router = useRouter()
+
+const { user, signOut, loading } = useAuth()
 
 function handleSearch() {
   const query = search.value.trim()
@@ -165,11 +213,30 @@ function toggleDarkMode() {
   localStorage.setItem('darkMode', isDarkMode.value)
 }
 
+const handleLogout = async () => {
+  try {
+    await signOut()
+    profileMenuOpen.value = false
+    router.push('/login')
+  } catch (err) {
+    console.error('Logout error:', err)
+  }
+}
+
 onMounted(() => {
   const saved = localStorage.getItem('darkMode')
   if (saved === 'true') {
     isDarkMode.value = true
     document.documentElement.classList.add('dark')
+  }
+})
+
+// Закрываем меню при клике вне его
+watch(profileMenuOpen, (newVal) => {
+  if (newVal) {
+    document.body.style.overflow = 'hidden'
+  } else {
+    document.body.style.overflow = ''
   }
 })
 </script>
