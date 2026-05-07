@@ -1,128 +1,32 @@
 import { ref, computed } from 'vue'
-import { supabase, SUPABASE_CONFIGURED } from '../lib/supabase'
 
 // Глобальное состояние (singleton)
 const user = ref(null)
 const loading = ref(false)
 const error = ref(null)
-let unsubscribe = null
 
 export function useAuth() {
-  // Инициализация при загрузке
   const initAuth = async () => {
-    if (!SUPABASE_CONFIGURED) {
-      user.value = null
-      return
-    }
-
-    try {
-      const { data: { session } } = await supabase.auth.getSession()
-      user.value = session?.user || null
-      
-      // Подписываемся на изменения авторизации
-      if (!unsubscribe) {
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-          user.value = session?.user || null
-        })
-        unsubscribe = subscription?.unsubscribe
-      }
-    } catch (err) {
-      error.value = err.message
-      console.error('Auth init error:', err)
-    }
+    user.value = null
   }
 
-  // Регистрация
-  const signUp = async (email, password, metadata = {}) => {
-    loading.value = true
-    error.value = null
-    if (!SUPABASE_CONFIGURED) {
-      const err = new Error('Supabase is not configured')
-      error.value = err.message
-      loading.value = false
-      throw err
-    }
-
-    try {
-      const { data, error: err } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: metadata
-        }
-      })
-      if (err) throw err
-      user.value = data.user
-      return data
-    } catch (err) {
-      error.value = err.message
-      throw err
-    } finally {
-      loading.value = false
-    }
+  const signUp = async () => {
+    loading.value = false
+    error.value = 'Авторизация отключена'
+    throw new Error('Авторизация отключена')
   }
 
-  // Логин
-  const signIn = async (email, password) => {
-    loading.value = true
-    error.value = null
-    if (!SUPABASE_CONFIGURED) {
-      const err = new Error('Supabase is not configured')
-      error.value = err.message
-      loading.value = false
-      throw err
-    }
-
-    try {
-      const { data, error: err } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      })
-      if (err) throw err
-      user.value = data.user
-      return data
-    } catch (err) {
-      error.value = err.message
-      throw err
-    } finally {
-      loading.value = false
-    }
+  const signIn = async () => {
+    loading.value = false
+    error.value = 'Авторизация отключена'
+    throw new Error('Авторизация отключена')
   }
 
-  // Логаут
   const signOut = async () => {
-    loading.value = true
-    error.value = null
-    if (!SUPABASE_CONFIGURED) {
-      user.value = null
-      loading.value = false
-      return
-    }
-
-    try {
-      const { error: err } = await supabase.auth.signOut()
-      if (err) throw err
-      user.value = null
-    } catch (err) {
-      error.value = err.message
-      throw err
-    } finally {
-      loading.value = false
-    }
+    user.value = null
   }
 
-  // Слушать изменения авторизации
-  const onAuthStateChange = (callback) => {
-    if (!SUPABASE_CONFIGURED) {
-      return { unsubscribe: () => {} }
-    }
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      user.value = session?.user || null
-      callback(event, session)
-    })
-    return subscription
-  }
+  const onAuthStateChange = () => ({ unsubscribe: () => {} })
 
   const isAuthenticated = computed(() => !!user.value)
 
