@@ -78,7 +78,7 @@ const formatDate = (dateString) => {
 const handleLogout = async () => {
   try {
     await signOut()
-    router.push('/login')
+    router.push('/')
   } catch (err) {
     console.error('Logout error:', err)
   }

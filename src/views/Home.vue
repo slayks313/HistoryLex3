@@ -34,8 +34,8 @@
             <!-- Фото -->
             <div class="relative h-64 overflow-hidden">
               <img 
-                :src="randomImages[0]" 
-                :alt="'История России'"
+                :src="defaultImage" 
+                alt="История России"
                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
               />
               <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -91,8 +91,8 @@
             <!-- Фото -->
             <div class="relative h-64 overflow-hidden">
               <img 
-                :src="randomImages[1]" 
-                :alt="'История Узбекистана'"
+                :src="defaultImage" 
+                alt="История Узбекистана"
                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
               />
               <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -181,27 +181,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-
-// Массив рандомных изображений разных размеров
-const randomImages = ref([])
-
-// Функция для генерации случайного числа для изображения
-const generateRandomImages = () => {
-  const imageIds = [
-    Math.floor(Math.random() * 800),
-    Math.floor(Math.random() * 800),
-    Math.floor(Math.random() * 800),
-    Math.floor(Math.random() * 800),
-    Math.floor(Math.random() * 800)
-  ]
-  
-  randomImages.value = imageIds.map(id => `https://picsum.photos/800/400?random=${id}`)
-}
-
-onMounted(() => {
-  generateRandomImages()
-})
+const defaultImage = '/nopic.jpg'
 </script>
 
 <style scoped>

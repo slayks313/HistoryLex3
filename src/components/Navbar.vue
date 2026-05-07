@@ -217,7 +217,7 @@ const handleLogout = async () => {
   try {
     await signOut()
     profileMenuOpen.value = false
-    router.push('/login')
+    router.push('/')
   } catch (err) {
     console.error('Logout error:', err)
   }

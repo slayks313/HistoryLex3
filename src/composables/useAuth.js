@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue'
-import { supabase } from '../lib/supabase'
+import { supabase, SUPABASE_CONFIGURED } from '../lib/supabase'
 
 // Глобальное состояние (singleton)
 const user = ref(null)
@@ -10,6 +10,11 @@ let unsubscribe = null
 export function useAuth() {
   // Инициализация при загрузке
   const initAuth = async () => {
+    if (!SUPABASE_CONFIGURED) {
+      user.value = null
+      return
+    }
+
     try {
       const { data: { session } } = await supabase.auth.getSession()
       user.value = session?.user || null
@@ -31,6 +36,13 @@ export function useAuth() {
   const signUp = async (email, password, metadata = {}) => {
     loading.value = true
     error.value = null
+    if (!SUPABASE_CONFIGURED) {
+      const err = new Error('Supabase is not configured')
+      error.value = err.message
+      loading.value = false
+      throw err
+    }
+
     try {
       const { data, error: err } = await supabase.auth.signUp({
         email,
@@ -54,6 +66,13 @@ export function useAuth() {
   const signIn = async (email, password) => {
     loading.value = true
     error.value = null
+    if (!SUPABASE_CONFIGURED) {
+      const err = new Error('Supabase is not configured')
+      error.value = err.message
+      loading.value = false
+      throw err
+    }
+
     try {
       const { data, error: err } = await supabase.auth.signInWithPassword({
         email,
@@ -74,6 +93,12 @@ export function useAuth() {
   const signOut = async () => {
     loading.value = true
     error.value = null
+    if (!SUPABASE_CONFIGURED) {
+      user.value = null
+      loading.value = false
+      return
+    }
+
     try {
       const { error: err } = await supabase.auth.signOut()
       if (err) throw err
@@ -88,6 +113,10 @@ export function useAuth() {
 
   // Слушать изменения авторизации
   const onAuthStateChange = (callback) => {
+    if (!SUPABASE_CONFIGURED) {
+      return { unsubscribe: () => {} }
+    }
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       user.value = session?.user || null
       callback(event, session)
